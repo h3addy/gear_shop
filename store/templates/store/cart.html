@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container container-sm px-4 px-lg-5 local-table-container">
+      <table class="table table-sm table-bordered table-hover table-light table-responsive col-form-label-sm local-table-1">
+          <thead>
+            <tr>
+              <th scope="col" colspan="2" class="text-align-center"></th>
+              <th scope="col" class="text-align-center">Item</th>
+              <th scope="col" class="text-align-center">Price</th>
+              <th scope="col" class="text-align-center">Quantity</th>
+              <th scope="col" class="text-align-center">Total Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td colspan="2" class="text-align-center"><img src="{{ item.product.imageURL }}" class="cart-product-icon"></td>
+              <td class="text-align-center">{{item.product.name}}</td>
+              <td class="text-align-center">&#x20B9;. {{item.product.current_price}}</td>
+              <td class="text-align-center">
+                <span class="quantity">{{ item.quantity }}</span>
+                <div class="quantity">
+                  <img src="{% static 'images/up.png' %}" data-product="{{item.product.id}}" data-action="add" alt="" class="chg-quantity update-cart">
+                  <img src="{% static 'images/down.png' %}" data-product="{{item.product.id}}" data-action="remove" alt="" class="chg-quantity update-cart">
+                </div>
+              </td>
+              <td class="text-align-center">&#x20B9;. {{item.get_total}}</td>
+            </tr> 
+            {% endfor %}  
+          </tbody>
+      </table>   
+      <table class="table table-sm table-light table-responsive table-bordered local-table-2">
+        <tbody>
+          <tr>
+            <td><strong>Items:</strong></td>
+            <td class="text-align-right"><strong>{{order.get_cart_items}}</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Price:</strong></td>
+            <td class="text-align-right"><strong>&#x20B9;. {{order.get_cart_total}}</strong></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="text-align-right"><a href="{% url 'store:checkout_page' %}" class="btn btn-success checkout-btn" id="checkout-btn1"><strong>CHECKOUT</strong></a></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="text-align-right"><a href="{% url 'store:all_products_page' %}" class="btn btn-outline-dark continue-shopping-btn">&#x2190; Continue Shopping</a></td>
+          </tr> 
+        </tbody>
+    </table> 
+    <div class="break"></div> <!-- break -->
+    
+  </div>
+  
+</section>
+
+<script type="text/javascript">
+  window.onload=function() {
+    var quantity = '{{order.get_cart_items}}'
+    console.log(typeof(quantity))
+    if (quantity <= 0){
+      console.log(typeof(quantity))
+      document.getElementById("checkout-btn1").classList.add('disabled-link')
+    }
+  }
+  
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock content %}

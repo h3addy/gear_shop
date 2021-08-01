@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="box-element" id="form-wrapper">
+                <form id="form" action="">
+                    {% csrf_token %}
+                    <div id="user-info">
+                        <div class="form-floating mx-sm-2">
+                            <input required type="text" class="form-control" id="floatingname" name="name" placeholder="">
+                            <label for="floatingInput">Username</label>
+                        </div>
+                        <div class="form-floating">
+                            <input required type="email" class="form-control" id="floatingemail" name="email" placeholder="">
+                            <label for="floatingPassword">Email address</label>
+                        </div>
+                        
+                    </div>
+                    <hr>
+                    <h5  id="shipping-info-header">Shipping Info:</h5>
+                    <div id="shipping-info">
+                        <div class="form-floating mx-sm-2 mb-2">
+                            <input required type="text" class="form-control" id="floatingaddress" name="address" placeholder="">
+                            <label for="floatingInput">Address</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <input required type="text" class="form-control" id="floatingcity" name="city" placeholder="">
+                            <label for="floatingPassword">City</label>
+                        </div>
+                        <div class="form-floating mx-sm-2 mb-2">
+                            <input required type="text" class="form-control" id="floatingstate" name="state" placeholder="">
+                            <label for="floatingInput">State</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <input required type="text" class="form-control" id="floatingzipcode" name="zipcode" placeholder="">
+                            <label for="floatingPassword">Zipcode</label>
+                        </div>
+                        <hr>
+                    </div>
+                    
+                    <input class="btn btn-success btn-block px-6 continue-checkout-button" type="submit" id="form-button" value="Continue">
+                </form>
+            </div>
+
+            <br>
+
+            <div class="box-element hidden" id="payment-info">
+                <h5>Payment Options</h5>
+                <button id="make-payment">Make Payment</button>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            
+            <div class="box-element">
+                <a href="{% url 'store:cart_page' %}" class="btn btn-outline-dark back-cart-button">&#x2190; Back To Cart</a>
+                <hr>
+
+                <h5>Order Summary:</h5>
+                <table class="table table-xl table-bordered table-hover table-light table-responsive col-form-label-sm local-table-3">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="text-align-center">Item</th>
+                        <th scope="col" class="text-align-center">Price</th>
+                        <th scope="col" class="text-align-center">Quantity</th>
+                        <th scope="col" class="text-align-center">Total Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                          <td class="text-align-center">{{item.product.name}}</td>
+                          <td class="text-align-center">&#x20B9;. {{item.product.current_price}}</td>
+                          <td class="text-align-center">{{ item.quantity }}</td>
+                          <td class="text-align-center">&#x20B9;. {{item.get_total}}</td>
+                        </tr> 
+                        {% endfor %}  
+                    </tbody>
+                </table> 
+                <table class="table table-sm table-light table-responsive local-table-4">
+                    <tbody>
+                      <tr>
+                        <td><strong>Total Items:</strong></td>
+                        <td class="text-align-right"><strong>{{order.get_cart_items}}</strong></td>
+                      </tr>
+                      <tr>
+                        <td><strong>Total Price:</strong></td>
+                        <td class="text-align-right"><strong>&#x20B9;. {{order.get_cart_total}}</strong></td>
+                      </tr>
+                      <!-- <tr>
+                        <td></td>
+                        <td class="text-align-right"><a href="{% url 'store:checkout_page' %}" class="btn btn-success checkout-btn"><strong>CHECKOUT</strong></a></td>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td class="text-align-right"><a href="{% url 'landing_page' %}" class="btn btn-outline-dark continue-shopping-btn">&#x2190; Continue Shopping</a></td>
+                      </tr>  -->
+                    </tbody>
+                </table> 
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var shipping = '{{order.shipping}}'
+        var total = '{{order.get_cart_total}}'
+
+        if(shipping == 'False'){
+            document.getElementById('shipping-info').innerHTML = ''
+            document.getElementById('shipping-info-header').innerHTML = ''
+        }
+
+        if (user_logged != 'AnonymousUser'){
+            document.getElementById('user-info').innerHTML = ''
+        }
+
+        if (shipping == 'False' && user_logged != 'AnonymousUser'){
+            document.getElementById('form-wrapper').classList.add('hidden')
+            document.getElementById('payment-info').classList.remove('hidden')
+        }
+
+
+
+        var form = document.getElementById('form')
+        form.addEventListener('submit', function(e){
+            e.preventDefault()
+            // console.log('form submit')
+            document.getElementById('form-button').classList.add('hidden')
+            document.getElementById('payment-info').classList.remove('hidden')
+        })
+
+        
+
+
+        document.getElementById('make-payment').addEventListener('click', function(e){
+            submitFormData()
+        })
+
+        function submitFormData(){
+            console.log('payment button clicked')
+
+            
+
+            var userFormData = {
+                'name': null,
+                'email': null,
+                'total': total,
+            }
+
+            var shippingInfo = {
+                'address': null,
+                'city': null,
+                'state': null,
+                'zipcode': null,
+            }
+
+            if(shipping != 'False'){
+                shippingInfo.address = form.address.value
+                shippingInfo.city = form.city.value
+                shippingInfo.state = form.state.value
+                shippingInfo.zipcode = form.zipcode.value
+            }
+
+            if(user_logged == 'AnonymousUser'){
+                userFormData.name = form.name.value
+                userFormData.email = form.email.value
+            }
+
+            var url = '/store/process_order/'
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({'form': userFormData, 'shipping': shippingInfo}),
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                alert('Transx completed');
+                cart = {}
+                document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+                window.location.href = "{% url 'store:all_products_page' %}"
+            })
+        
+        }
+
+        
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock content %}
