@@ -43,7 +43,7 @@ import os
 SECRET_KEY = os.getenv('SECRET_KEY', 'NA')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['ggearshop.herokuapp.com', '127.0.0.1',]
 
