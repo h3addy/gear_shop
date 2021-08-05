@@ -7,7 +7,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'landing_page' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#!">Support</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -17,18 +17,28 @@
                         <li><a class="dropdown-item" href="{% url 'store:new_arrivals_page' %}">New Arrivals</a></li>
                     </ul>
                 </li>
-                {% if user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'log_out_page' %}">Log Out</a></li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'sign_up_page' %}">Sign Up</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'sign_in_page' %}">Sign In</a></li>
-                {% endif %}
+                
+            {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{user.username}}</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'store:all_products_page' %}">Profile Settings</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="{% url 'log_out_page' %}">Log Out</a></li>
+                    </ul>
+                </li>
+            
+            {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'sign_up_page' %}">Sign Up</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sign_in_page' %}">Sign In</a></li>
+            
+            {% endif %}
             </ul>
-            <span>
+            <!-- <span>
                 {% if user.is_authenticated %}
                   {{user.username}}
                 {% endif %}
-            </span>
+            </span> -->
             <form action="{% url 'store:cart_page' %}" class="d-flex">
                 <button class="btn btn-outline-dark" type="submit">
                     <i class="bi-cart-fill me-1"></i>
@@ -36,6 +46,7 @@
                     <span class="badge bg-white text-dark ms-1 rounded-pill">{{cartItems}}</span>
                 </button>
             </form>
+            </div>
         </div>
     </div>
 </nav>
