@@ -12,10 +12,3 @@ Future Updates :
 4. Customer logged in box and menu list.
 
 I don't own any images available over here. Please refrain from using them for commerical purposes.
-
-Update 1
-MainComponent
-MainComponent
-MainComponent
-MainComponent
-MainComponent
